@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Churn AI Predictor</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #121212; color: #e0e0e0; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background-color: #1e1e1e; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); width: 400px; position: relative; border: 1px solid #333; }
+        .lang-switch { position: absolute; top: 15px; right: 15px; cursor: pointer; background: #333; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: #fff; transition: 0.3s; user-select: none; }
+        .lang-switch:hover { background: #444; }
+        h2 { text-align: center; color: #00d2ff; margin-bottom: 1.5rem; font-weight: 600; letter-spacing: 1px; }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: #aaa; }
+        input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #2c2c2c; color: #fff; box-sizing: border-box; transition: 0.3s; outline: none; }
+        input:focus, select:focus { border-color: #00d2ff; background: #333; }
+        button { width: 100%; padding: 14px; background: linear-gradient(135deg, #00d2ff, #0078ff); border: none; border-radius: 8px; color: #000; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 1.2rem; font-size: 1rem; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4); }
+        button:disabled { background: #555; cursor: not-allowed; transform: none; }
+        #result { margin-top: 1.5rem; padding: 1rem; border-radius: 8px; text-align: center; display: none; animation: fadeIn 0.5s; }
+        .safe { background-color: rgba(76, 175, 80, 0.2); color: #81c784; border: 1px solid #2e7d32; }
+        .danger { background-color: rgba(255, 82, 82, 0.2); color: #ff8a80; border: 1px solid #c62828; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="lang-switch" id="langBtn" onclick="toggleLanguage()">ES 🇪🇸 / EN 🇺🇸</div>
+    <h2 data-i18n="title">🔮 AI Churn Predictor</h2>
+    
+    <form id="churnForm">
+        <div class="form-group"><label data-i18n="creditScore">Credit Score</label><input type="number" id="CreditScore" value="600"></div>
+        
+        <div class="form-group"><label data-i18n="country">Country</label>
+            <select id="Geography">
+                <option value="France">France</option>
+                <option value="Germany" selected>Germany</option>
+                <option value="Spain">Spain</option>
+            </select>
+        </div>
+
+        <div class="form-group"><label data-i18n="gender">Gender</label>
+            <select id="Gender">
+                <option value="Male" data-i18n="male">Male</option>
+                <option value="Female" selected data-i18n="female">Female</option>
+            </select>
+        </div>
+
+        <div class="form-group"><label data-i18n="age">Age</label><input type="number" id="Age" value="55"></div>
+        <div class="form-group"><label data-i18n="tenure">Tenure (Years)</label><input type="number" id="Tenure" value="3"></div>
+        <div class="form-group"><label data-i18n="balance">Account Balance ($)</label><input type="number" id="Balance" value="150000"></div>
+        <div class="form-group"><label data-i18n="products">Num of Products</label><input type="number" id="NumOfProducts" value="1"></div>
+        
+        <div class="form-group"><label data-i18n="creditCard">Has Credit Card?</label>
+            <select id="HasCrCard"><option value="1" data-i18n="yes">Yes</option><option value="0" data-i18n="no">No</option></select>
+        </div>
+        
+        <div class="form-group"><label data-i18n="active">Is Active Member?</label>
+            <select id="IsActiveMember"><option value="1" data-i18n="yes">Yes</option><option value="0" selected data-i18n="no">No</option></select>
+        </div>
+        
+        <div class="form-group"><label data-i18n="salary">Estimated Salary ($)</label><input type="number" id="EstimatedSalary" value="50000"></div>
+
+        <button type="submit" id="btnPredict" data-i18n="btnCalc">Calculate Risk</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    let currentLang = 'en';
+    const translations = {
+        en: {
+            title: "🔮 AI Churn Predictor", creditScore: "Credit Score", country: "Country", gender: "Gender", male: "Male", female: "Female", age: "Age", tenure: "Tenure (Years)", balance: "Account Balance ($)", products: "Num of Products", creditCard: "Has Credit Card?", active: "Is Active Member?", salary: "Estimated Salary ($)", yes: "Yes", no: "No", btnCalc: "Calculate Risk", analyzing: "Analyzing with AI...", alert: "⚠️ CHURN ALERT", safe: "✅ SAFE CUSTOMER", prob: "Churn Probability:", action: "Recommended Action:"
+        },
+        es: {
+            title: "🔮 Predicción de Fuga IA", creditScore: "Puntaje Crediticio", country: "País", gender: "Género", male: "Masculino", female: "Femenino", age: "Edad", tenure: "Antigüedad (Años)", balance: "Saldo en Cuenta ($)", products: "Núm. de Productos", creditCard: "¿Tiene Tarjeta?", active: "¿Es Miembro Activo?", salary: "Salario Estimado ($)", yes: "Sí", no: "No", btnCalc: "Calcular Riesgo", analyzing: "Analizando con IA...", alert: "⚠️ ALERTA DE FUGA", safe: "✅ CLIENTE SEGURO", prob: "Probabilidad de Fuga:", action: "Acción Recomendada:"
+        }
+    };
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'en' ? 'es' : 'en';
+        document.getElementById('langBtn').innerText = currentLang === 'en' ? 'ES 🇪🇸 / EN 🇺🇸' : 'EN 🇺🇸 / ES 🇪🇸';
+        updateTexts();
+    }
+
+    function updateTexts() {
+        const t = translations[currentLang];
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (t[key]) el.innerText = t[key];
+        });
+        const btn = document.getElementById('btnPredict');
+        if (!btn.disabled) btn.innerText = t.btnCalc;
+    }
+
+    document.getElementById('churnForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btnPredict');
+        const resultDiv = document.getElementById('result');
+        const t = translations[currentLang];
+        
+        btn.innerText = t.analyzing;
+        btn.disabled = true;
+        resultDiv.style.display = 'none';
+
+        const formData = {
+            CreditScore: parseInt(document.getElementById('CreditScore').value),
+            Geography: document.getElementById('Geography').value,
+            Gender: document.getElementById('Gender').value,
+            Age: parseInt(document.getElementById('Age').value),
+            Tenure: parseInt(document.getElementById('Tenure').value),
+            Balance: parseFloat(document.getElementById('Balance').value),
+            NumOfProducts: parseInt(document.getElementById('NumOfProducts').value),
+            HasCrCard: parseInt(document.getElementById('HasCrCard').value),
+            IsActiveMember: parseInt(document.getElementById('IsActiveMember').value),
+            EstimatedSalary: parseFloat(document.getElementById('EstimatedSalary').value)
+        };
+
+        try {
+            // Nota: Cuando subamos a la nube, cambiaremos esta URL
+            const response = await fetch('http://127.0.0.1:8000/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            const data = await response.json();
+            resultDiv.style.display = 'block';
+            if (data.probabilidad_fuga > 0.5) {
+                resultDiv.className = 'danger';
+                resultDiv.innerHTML = `<strong>${t.alert}</strong><br>${t.prob} ${(data.probabilidad_fuga * 100).toFixed(2)}%<br>${t.action} ${data.accion_sugerida}`;
+            } else {
+                resultDiv.className = 'safe';
+                resultDiv.innerHTML = `<strong>${t.safe}</strong><br>${t.prob} ${(data.probabilidad_fuga * 100).toFixed(2)}%`;
+            }
+        } catch (error) {
+            console.error(error);
+            alert(currentLang === 'en' ? "Error connecting to API." : "Error al conectar con la API.");
+        }
+        btn.innerText = t.btnCalc;
+        btn.disabled = false;
+    });
+    updateTexts();
+</script>
+</body>
+</html>
